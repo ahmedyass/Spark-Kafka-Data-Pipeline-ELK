@@ -1,0 +1,39 @@
+name: Python application
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.8
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: Lint with venv
+      run: |
+        pip install venv
+    - name: Test with venv
+      run: |
+        venv/scripts/activate.bat
+        
+    - name: Set up Kafka
+    - name: run zookeper
+      run: |
+        bin/zookeeper-server-start.sh config/zookeeper.properties
+        bin\windows\zookeeper-server-start.bat config/zookeeper.properties
+    - name: run Kafka
+      run: |
+        bin/kafka-server-start.sh config/server.properties
+        bin\windows\kafka-server-start.bat config/server.properties
+    - name: Create a topic with Kafka
+      run: |
+        bin/kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic speech
+        bin\windows\kafka-topics.bat --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic speech
